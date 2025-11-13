@@ -1,0 +1,27 @@
+import { User } from "../models/userModel.js";
+
+
+export const register = async (req, res) => {
+  try {
+    const { firstName, lastName, email, password } = req.body;
+
+    if (!firstName || !lastName || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    const user = await User.findOne({email});
+    if (user) {
+      return res.status(409).json({ message: "User already exists" });
+    }
+    const newUser = await User.create({ firstName, lastName, email, password });
+    await newUser.save();
+    return res.status(201).json({ 
+        message: "User registered successfully",
+        success: true,
+        user:newUser
+     });
+
+  } catch (error) {
+    console.error("Error in user registration:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
