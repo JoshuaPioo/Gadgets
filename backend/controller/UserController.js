@@ -32,3 +32,35 @@ export const register = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const verify = async (req, res) => {
+  try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith("Bearer ")) {
+          return res.status(401).json({ message: "Authorization token missing or invalid" });
+      }
+
+      const token = authHeader.split(" ")[1]; // Bearer <token>
+      let decoded;
+      try {
+        decode = jwt.verify(token, process.env.SECRET_KEY);
+      } catch (error) {
+        if (error.name === 'TokenExpiredError') {
+          return res.status(401).json({ message: "Token has expired" });
+        }
+
+        return res.status(401).json({ message: "Invalid token" });
+      }
+
+      const user = await User.findById(decode.id);
+      if (!user) {
+          return res.status(404).json({ message: "User not found" });
+      }
+      user.token = null;
+      user.isVerified = true;
+      await user.save();
+      return res.status(200).json({ message: "Email verified successfully", success: true });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
