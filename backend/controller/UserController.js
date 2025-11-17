@@ -17,7 +17,7 @@ export const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({ firstName, lastName, email, password: hashedPassword });
 
-    const token = jwt.sign({ id: newUser._id}, process.env.SECRET_KEY, { expiresIn: '10m' });
+    const token = jwt.sign({ id: newUser._id}, process.env.SECRET_KEY, { expiresIn: '1d' });
     verifyEmail(token, email);//send verification email
     newUser.token = token;
     await newUser.save();
@@ -43,23 +43,28 @@ export const verify = async (req, res) => {
       const token = authHeader.split(" ")[1]; // Bearer <token>
       let decoded;
       try {
-        decode = jwt.verify(token, process.env.SECRET_KEY);
+        decoded = jwt.verify(token, process.env.SECRET_KEY);
       } catch (error) {
         if (error.name === 'TokenExpiredError') {
           return res.status(401).json({ message: "Token has expired" });
         }
-
         return res.status(401).json({ message: "Invalid token" });
       }
 
-      const user = await User.findById(decode.id);
+      const user = await User.findById(decoded.id);
       if (!user) {
           return res.status(404).json({ message: "User not found" });
       }
+
       user.token = null;
       user.isVerified = true;
       await user.save();
-      return res.status(200).json({ message: "Email verified successfully", success: true });
+
+      return res.status(200).json({ 
+        message: "Email verified successfully", 
+        success: true 
+      });
+
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
