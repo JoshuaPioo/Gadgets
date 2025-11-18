@@ -17,7 +17,7 @@ export const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({ firstName, lastName, email, password: hashedPassword });
 
-    const token = jwt.sign({ id: newUser._id}, process.env.SECRET_KEY, { expiresIn: '1d' });
+    const token = jwt.sign({ id: newUser._id}, process.env.SECRET_KEY, { expiresIn: '10m' });
     verifyEmail(token, email);//send verification email
     newUser.token = token;
     await newUser.save();
@@ -69,3 +69,27 @@ export const verify = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const reverify = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const token = jwt.sign({ id: user._id}, process.env.SECRET_KEY, { expiresIn: '10m' });
+    verifyEmail(token, email);//send verification email
+
+    user.token = token;
+    await user.save();
+    return res.status(200).json({ 
+        message: "Verification email resent successfully",
+        success: true,
+        token: user.token
+     });
+
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
