@@ -144,8 +144,13 @@ export const reverify = async (req, res) => {
 
   export const logout = async (req, res) => {
     try {
-      const userId = req.user.id;
-      const user = await User.findById(userId);
+      const userId = req.id;
+      await Session.deleteMany({ userId:userId });
+      await User.findByIdAndUpdate(userId, { isLoggedIn: false });
+      return res.status(200).json({ 
+        success: true,
+        message: "Logout successful"
+       });
 
     }catch (error) {
         res.status(500).json({ message: "Internal server error" });
