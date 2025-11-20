@@ -142,7 +142,7 @@ export const reverify = async (req, res) => {
     }
   };
 
-  /*export const logout = async (req, res) => {
+  export const logout = async (req, res) => {
     try {
       const userId = req.user.id;
       const user = await User.findById(userId);
@@ -151,5 +151,5 @@ export const reverify = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
       }
     }
-    ;*/
+    ;
 
