@@ -1,5 +1,5 @@
 import express from 'express';
-import { logout,login, register, reverify, verify } from '../controller/UserController.js';
+import { logout,login, register, reverify, verify, forgotPassword } from '../controller/UserController.js';
 import { isAuthenticated } from '../middleware/isAuthenthicated.js';
 
 
@@ -10,5 +10,6 @@ router.post('/verify', verify);
 router.post('/reverify', reverify);
 router.post('/login', login);
 router.post('/logout',isAuthenticated, logout);
+router.post('/forgot-password', forgotPassword);
 
 export default router;

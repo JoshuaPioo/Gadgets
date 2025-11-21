@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { verifyEmail } from "../emailVerifier/verifyEMail.js";
 import { Session } from "../models/sessionModel.js";
+import { sendOTPMail } from "../emailVerifier/sendOTPMail.js";
 
 export const register = async (req, res) => {
   try {
@@ -155,6 +156,33 @@ export const reverify = async (req, res) => {
     }catch (error) {
         res.status(500).json({ message: "Internal server error" });
       }
-    }
-    ;
+    };
 
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+
+    user.otp = otp;
+    user.otpExpiry = otpExpiry;
+
+    await user.save();
+    await sendOTPMail(email, otp);
+
+    return res.status(200).json({
+      message: "OTP sent to email successfully",
+      success: true
+    });
+
+  } catch (error) {
+    console.error("Error in forgotPassword:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
