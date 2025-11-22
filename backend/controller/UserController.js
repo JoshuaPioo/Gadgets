@@ -231,25 +231,35 @@ export const verifyOTP = async (req, res) => {
 
 export const changePassword = async (req, res) => {
   try {
-    const  { newPassword, confirmPassword } = req.body;
-    const {email} = req.params;
+    const { newPassword, confirmPassword } = req.body;
+    const { email } = req.params;
+
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (!newPassword == !confirmPassword) {
+    // Check if any field is empty
+    if (!newPassword || !confirmPassword) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // Check if passwords match
+    if (newPassword !== confirmPassword) {
       return res.status(400).json({ message: "Passwords do not match" });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
     await user.save();
-    return res.status(200).json({ 
+
+    return res.status(200).json({
       message: "Password changed successfully",
       success: true
-     });
+    });
+
   } catch (error) {
-    return res.status(500).json({ message: "Internal server error" });  
+    console.error("Error in changePassword:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
