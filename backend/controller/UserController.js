@@ -263,3 +263,26 @@ export const changePassword = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const allUsers = async (req, res) => {
+  try {
+    const user = await User.find();
+    return res.status(200).json({
+      message: "Users fetched successfully",
+      success: true,
+      user
+    });
+    
+    
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const isAdmin = async (req, res) => {
+  if(req.user && req.user.role === 'admin'){
+    next();
+  } else {
+    return res.status(403).json({ message: "Access denied. Admins only." });
+  }
+};
