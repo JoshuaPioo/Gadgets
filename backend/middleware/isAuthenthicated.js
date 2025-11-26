@@ -24,7 +24,7 @@ export const isAuthenticated = async (req, res, next) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    req.user = user;
     req.id = user._id;
     next();
 
@@ -33,3 +33,11 @@ export const isAuthenticated = async (req, res, next) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+  export const isAdmin = async (req, res, next) => {
+    if(req.user && req.user.role === 'admin'){
+      next();
+    } else {
+      return res.status(403).json({ message: "Access denied. Admins only." });
+    }
+  };
