@@ -279,4 +279,20 @@ export const allUsers = async (req, res) => {
   }
 };
 
+export const getUserbyId = async (req, res) => {
+  try {
+    const {userId} = req.params;
+    const user = await User.findById(userId).select("-password -otp -otpExpiry -token");
+    if(!user){
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({
+      message: "User fetched successfully",
+      success: true,
+      user
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
 
