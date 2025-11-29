@@ -1,6 +1,7 @@
 import express from 'express';
-import { logout,login, register, reverify, verify, forgotPassword, verifyOTP, changePassword, allUsers } from '../controller/UserController.js';
+import { logout,login, register, reverify, verify, forgotPassword, verifyOTP, changePassword, allUsers, getUserbyId } from '../controller/UserController.js';
 import { isAdmin, isAuthenticated } from '../middleware/isAuthenthicated.js';
+import { get } from 'mongoose';
 
 
 const router = express.Router();
@@ -15,6 +16,8 @@ router.post('/verify-otp/:email', verifyOTP);
 router.post('/change-password/:email', changePassword);
 
 router.get('/all-user', isAuthenticated, isAdmin, allUsers);
+router.get('/get-user/:userId', getUserbyId);
+
 
 
 export default router;
