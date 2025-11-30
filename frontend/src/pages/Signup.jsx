@@ -1,8 +1,11 @@
+import axios from "axios";
 import React, { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
+import { toast, Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -10,21 +13,49 @@ const Signup = () => {
     password: "",
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
-    const {name, value} = e.target;
-    setFormData((prev)=> ({
+    const { name, value } = e.target;
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Signup Data:", formData);
+    try {
+      setLoading(true);
+      const res = await axios.post(
+        "http://localhost:8000/api/v1/user/register",
+        formData,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (res.data.success) {
+        toast.success("Registration successful! Please verify your email.");
+
+        setTimeout(() => {
+          navigate("/verify");
+        }, 1500);
+      }
+
+      console.log("Server Response:", res.data);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Registration failed");
+      console.error("Signup Error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-pink-100 p-4">
+      <Toaster />
       <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center text-pink-600">
           Gadget Store Signup
@@ -84,7 +115,7 @@ const Signup = () => {
               />
               <button
                 type="button"
-                className="absolute right-3 top-2 text-sm"
+                className="absolute right-3 top-2 text-sm text-gray-600"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? "Hide" : "Show"}
@@ -92,19 +123,47 @@ const Signup = () => {
             </div>
           </div>
 
-          {/* Signup Button */}
+          {/* Signup Button with Loading */}
           <button
             type="submit"
-            className="w-full py-2 rounded-lg bg-pink-500 text-white font-semibold hover:bg-pink-600 transition"
+            disabled={loading}
+            className={`w-full py-2 rounded-lg bg-pink-500 text-white font-semibold hover:bg-pink-600 transition flex justify-center items-center ${
+              loading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
           >
-            Sign Up
+            {loading && (
+              <svg
+                className="animate-spin h-5 w-5 mr-2 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
+              </svg>
+            )}
+            {loading ? "Signing Up..." : "Sign Up"}
           </button>
         </form>
 
         {/* Login Link */}
         <p className="text-center text-sm mt-4">
           Already have an account?{" "}
-          <a href="/login" className="text-pink-500 font-medium hover:underline">
+          <a
+            href="/login"
+            className="text-pink-500 font-medium hover:underline"
+          >
             Login
           </a>
         </p>
