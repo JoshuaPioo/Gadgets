@@ -23,7 +23,7 @@
             subject: "Email Verification",
             text: `
             Hi! Please verify your email:
-            http://localhost:3000/verify/${token}
+            http://localhost:5173/verify/${token}
             `
         };
 
