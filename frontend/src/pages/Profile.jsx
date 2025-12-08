@@ -1,14 +1,31 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Profile = () => {
+  
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // Clear token or your auth logic here
-    localStorage.removeItem("token");
-    navigate("/login");
-  };
+        const handleLogout = async () => {
+          try {
+            const token = localStorage.getItem("token");
+
+            await axios.post(
+              "http://localhost:8000/api/v1/user/logout",
+              {},
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+
+            localStorage.removeItem("token");
+            navigate("/login");
+          } catch (error) {
+            console.error("Logout failed:", error);
+          }
+        };
 
   return (
     <div className="pt-24 px-6 max-w-lg mx-auto">
