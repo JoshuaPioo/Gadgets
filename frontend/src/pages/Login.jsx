@@ -1,7 +1,9 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { setUser } from "../redux/userSlice";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,6 +15,7 @@ const Login = () => {
   });
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,11 +40,14 @@ const Login = () => {
       if (res.data.success) {
         toast.success("Login successful!");
 
-        // Save token for future auth
-        localStorage.setItem("token", res.data.token);
+        // Save the real token returned by backend
+        localStorage.setItem("token", res.data.accesstoken);
+
+        // Save user data to redux
+        dispatch(setUser(res.data.user));
 
         setTimeout(() => {
-          navigate("/"); 
+          navigate("/");
         }, 1500);
       }
     } catch (error) {
@@ -61,8 +67,6 @@ const Login = () => {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-
-          {/* Email */}
           <div>
             <label className="block mb-1 font-medium">Email</label>
             <input
@@ -75,7 +79,6 @@ const Login = () => {
             />
           </div>
 
-          {/* Password */}
           <div>
             <label className="block mb-1 font-medium">Password</label>
             <div className="relative">
@@ -98,7 +101,6 @@ const Login = () => {
             </div>
           </div>
 
-          {/* Login Button */}
           <button
             type="submit"
             disabled={loading}
@@ -132,10 +134,12 @@ const Login = () => {
           </button>
         </form>
 
-        {/* Signup Link */}
         <p className="text-center text-sm mt-4">
           Don't have an account?{" "}
-          <a href="/signup" className="text-pink-500 font-medium hover:underline">
+          <a
+            href="/signup"
+            className="text-pink-500 font-medium hover:underline"
+          >
             Sign Up
           </a>
         </p>
