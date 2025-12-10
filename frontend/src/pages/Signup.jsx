@@ -25,7 +25,6 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Signup Data:", formData);
     try {
       setLoading(true);
       const res = await axios.post(
@@ -38,23 +37,17 @@ const Signup = () => {
 
       if (res.data.success) {
         toast.success("Registration successful! Please verify your email.");
-
-        setTimeout(() => {
-          navigate("/verify");
-        }, 1500);
+        setTimeout(() => navigate("/verify"), 1500);
       }
-
-      console.log("Server Response:", res.data);
     } catch (error) {
       toast.error(error.response?.data?.message || "Registration failed");
-      console.error("Signup Error:", error);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-pink-100 p-4">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-pink-100 to-pink-200 p-4">
       <Toaster />
       <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center text-pink-600">
@@ -123,7 +116,7 @@ const Signup = () => {
             </div>
           </div>
 
-          {/* Signup Button with Loading */}
+          {/* Signup Button */}
           <button
             type="submit"
             disabled={loading}

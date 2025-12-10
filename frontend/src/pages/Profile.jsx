@@ -1,13 +1,16 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { clearUser } from "../redux/userSlice";
 import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
+  const user = useSelector((state) => state.user.user);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    dispatch(clearUser());
     navigate("/"); // redirect to home
-    window.location.reload(); // force refresh so ProtectedRoute kicks in
   };
 
   return (
@@ -21,24 +24,24 @@ const Profile = () => {
           />
         </div>
 
-        <h2 className="text-2xl font-bold text-pink-600">Your Profile</h2>
+        <h2 className="text-2xl font-bold text-pink-600">
+          {user?.firstName}'s Profile
+        </h2>
         <p className="text-gray-600 mt-1">Manage your account</p>
 
         <div className="mt-6 space-y-3">
           <button
-            onClick={() => alert("Settings clicked")}
+            onClick={() => navigate("/settings")}
             className="w-full py-3 bg-pink-500 text-white rounded-xl font-medium hover:bg-pink-600 transition"
           >
             Account Settings
           </button>
-
           <button
-            onClick={() => alert("Change photo clicked")}
+            onClick={() => navigate("/change-photo")}
             className="w-full py-3 bg-white border border-pink-400 text-pink-600 rounded-xl font-medium hover:bg-pink-50 transition"
           >
             Change Profile Photo
           </button>
-
           <button
             onClick={handleLogout}
             className="w-full py-3 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition"

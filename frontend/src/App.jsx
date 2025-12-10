@@ -1,12 +1,14 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Products from "./pages/Products";
 import Profile from "./pages/Profile";
-import Footer from "./components/Footer";
+import Verify from "./pages/Verify";
+import VerifyEmail from "./pages/VerifyEmail";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const router = createBrowserRouter([
@@ -20,14 +22,29 @@ const router = createBrowserRouter([
       </>
     ),
   },
-  { path: "/signup", element: <Signup /> },
-  { path: "/login", element: <Login /> },
+  {
+    path: "/signup",
+    element: <Signup />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/verify",
+    element: <Verify />,
+  },
+  {
+    path: "/verify/:token",
+    element: <VerifyEmail />,
+  },
   {
     path: "/products",
     element: (
       <>
         <Navbar />
         <Products />
+        <Footer />
       </>
     ),
   },
@@ -35,10 +52,9 @@ const router = createBrowserRouter([
     path: "/profile",
     element: (
       <ProtectedRoute>
-        <>
-          <Navbar />
-          <Profile />
-        </>
+        <Navbar />
+        <Profile />
+        <Footer />
       </ProtectedRoute>
     ),
   },

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiMenu, FiX, FiShoppingCart } from "react-icons/fi";
 import { useSelector, useDispatch } from "react-redux";
-import { clearUser, setUser } from "../redux/userSlice";
+import { clearUser } from "../redux/userSlice";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -12,20 +12,17 @@ const Navbar = () => {
   const user = useSelector((state) => state.user.user);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
     dispatch(clearUser());
-    navigate("/"); // redirect to home
+    navigate("/"); // redirect home
   };
 
   return (
     <nav className="backdrop-blur-lg bg-white/60 shadow-md fixed top-0 left-0 w-full z-50">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Logo */}
         <Link to="/" className="text-2xl font-bold text-pink-600">
           MyShop
         </Link>
 
-        {/* Desktop */}
         <div className="hidden md:flex items-center gap-8 text-gray-700 font-medium">
           <Link to="/" className="hover:text-pink-600 transition">
             Home
@@ -60,7 +57,6 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {/* Mobile Hamburger */}
         <button
           className="md:hidden text-gray-700"
           onClick={() => setOpen(!open)}
@@ -69,7 +65,6 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
       {open && (
         <div className="md:hidden bg-white/90 backdrop-blur-lg shadow-md px-6 py-4 flex flex-col gap-4 text-gray-700 font-medium">
           <Link
