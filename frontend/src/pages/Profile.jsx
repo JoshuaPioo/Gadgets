@@ -1,32 +1,18 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 const Profile = () => {
-  
   const navigate = useNavigate();
 
-        const handleLogout = async () => {
-          try {
-            const token = localStorage.getItem("token");
-
-            await axios.post("http://localhost:8000/api/v1/user/logout", null, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            });
-
-            localStorage.removeItem("token");
-            navigate("/login");
-          } catch (error) {
-            console.error("Logout failed:", error);
-          }
-        };
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/"); // redirect to home
+    window.location.reload(); // force refresh so ProtectedRoute kicks in
+  };
 
   return (
     <div className="pt-24 px-6 max-w-lg mx-auto">
       <div className="bg-white rounded-2xl shadow-md p-6 text-center">
-        {/* Profile Photo */}
         <div className="flex justify-center mb-4">
           <img
             src="https://via.placeholder.com/120"
@@ -38,17 +24,16 @@ const Profile = () => {
         <h2 className="text-2xl font-bold text-pink-600">Your Profile</h2>
         <p className="text-gray-600 mt-1">Manage your account</p>
 
-        {/* Buttons */}
         <div className="mt-6 space-y-3">
           <button
-            onClick={() => navigate("/settings")}
+            onClick={() => alert("Settings clicked")}
             className="w-full py-3 bg-pink-500 text-white rounded-xl font-medium hover:bg-pink-600 transition"
           >
             Account Settings
           </button>
 
           <button
-            onClick={() => navigate("/change-photo")}
+            onClick={() => alert("Change photo clicked")}
             className="w-full py-3 bg-white border border-pink-400 text-pink-600 rounded-xl font-medium hover:bg-pink-50 transition"
           >
             Change Profile Photo

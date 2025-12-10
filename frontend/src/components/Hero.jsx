@@ -22,13 +22,6 @@ const Hero = () => {
             >
               Shop Now
             </a>
-
-            <a
-              href="/profile"
-              className="px-6 py-3 bg-white border border-pink-300 text-pink-600 rounded-xl font-semibold shadow hover:bg-pink-50 transition"
-            >
-              My Account
-            </a>
           </div>
         </div>
 
