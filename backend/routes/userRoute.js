@@ -1,23 +1,41 @@
-import express from 'express';
-import { logout,login, register, reverify, verify, forgotPassword, verifyOTP, changePassword, allUsers, getUserbyId } from '../controller/UserController.js';
-import { isAdmin, isAuthenticated } from '../middleware/isAuthenthicated.js';
-import { get } from 'mongoose';
+import express from "express";
+import {
+  logout,
+  login,
+  register,
+  reverify,
+  verify,
+  forgotPassword,
+  verifyOTP,
+  changePassword,
+  allUsers,
+  getUserbyId,
+  updateProfile,
+  updatePassword,
+} from "../controller/UserController.js";
 
+import { isAuthenticated, isAdmin } from "../middleware/isAuthenthicated.js";
 
 const router = express.Router();
 
-router.post('/register', register);
-router.post('/verify', verify);
-router.post('/reverify', reverify);
-router.post('/login', login);
-router.post('/logout', isAuthenticated, logout);
-router.post('/forgot-password', forgotPassword);
-router.post('/verify-otp/:email', verifyOTP);
-router.post('/change-password/:email', changePassword);
+// AUTH
+router.post("/register", register);
+router.post("/verify", verify);
+router.post("/reverify", reverify);
+router.post("/login", login);
+router.post("/logout", isAuthenticated, logout);
 
-router.get('/all-user', isAuthenticated, isAdmin, allUsers);
-router.get('/get-user/:userId', getUserbyId);
+// PASSWORD
+router.post("/forgot-password", forgotPassword);
+router.post("/verify-otp/:email", verifyOTP);
+router.post("/change-password/:email", changePassword); // OTP reset
+router.put("/update-password", isAuthenticated, updatePassword); // Logged-in change pass
 
+// USER PROFILE
+router.put("/update-profile", isAuthenticated, updateProfile);
+router.get("/get-user/:userId", getUserbyId);
 
+// ADMIN ONLY
+router.get("/all-user", isAuthenticated, isAdmin, allUsers);
 
 export default router;
