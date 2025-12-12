@@ -4,6 +4,7 @@ import axios from "axios";
 import { setUser, clearUser } from "../redux/userSlice";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import defaultProfile from "../assets/defaultProfile.png"; // Local fallback image
 
 const Profile = () => {
   const user = useSelector((state) => state.user.user);
@@ -20,6 +21,8 @@ const Profile = () => {
     city: user?.city || "",
     zipCode: user?.zipCode || "",
   });
+
+  const [profilePic, setProfilePic] = useState(user?.profilePicture || "");
 
   const [orders, setOrders] = useState([]);
 
@@ -111,16 +114,50 @@ const Profile = () => {
     navigate("/"); // redirect to home/login
   };
 
+  // Upload profile picture
+  const handleProfilePicChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.put(
+        "http://localhost:8000/api/v1/user/update-profile-picture",
+        formData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setProfilePic(res.data.user.profilePicture);
+      toast.success("Profile picture updated!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update profile picture");
+    }
+  };
+
   return (
     <div className="pt-24 px-4 max-w-3xl mx-auto">
       <div className="bg-white rounded-2xl shadow-md p-6">
-        <div className="flex justify-center mb-6">
+        {/* Profile Picture */}
+        <div className="flex justify-center mb-2">
           <img
-            src="https://via.placeholder.com/120"
+            src={profilePic || defaultProfile}
             alt="Profile"
-            className="w-28 h-28 rounded-full border-4 border-pink-300 object-cover"
+            className="w-28 h-28 rounded-full border-4 border-pink-300 object-cover mb-2"
           />
         </div>
+        <div className="flex justify-center mb-6">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleProfilePicChange}
+            className="block"
+          />
+        </div>
+
         <h2 className="text-2xl font-bold text-pink-600 text-center mb-2">
           {user?.firstName}'s Profile
         </h2>

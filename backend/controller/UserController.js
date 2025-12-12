@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { verifyEmail } from "../emailVerifier/verifyEmail.js";
 import { Session } from "../models/sessionModel.js";
 import { sendOTPMail } from "../emailVerifier/sendOTPMail.js";
+import cloudinary from "../utils/cloudinary.js";
 
 // REGISTER
 export const register = async (req, res) => {
@@ -304,6 +305,40 @@ export const getUserbyId = async (req, res) => {
       user,
     });
   } catch {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const updateProfilePicture = async (req, res) => {
+  try {
+    const userId = req.id;
+
+    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "profile_pictures" },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      stream.end(req.file.buffer);
+    });
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { profilePicture: result.secure_url },
+      { new: true }
+    );
+
+    res.json({
+      success: true,
+      message: "Profile picture updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

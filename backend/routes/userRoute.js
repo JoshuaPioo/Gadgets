@@ -12,9 +12,11 @@ import {
   getUserbyId,
   updateProfile,
   updatePassword,
+  updateProfilePicture,
 } from "../controller/UserController.js";
 
 import { isAuthenticated, isAdmin } from "../middleware/isAuthenthicated.js";
+import { singleUpload } from "../middleware/multer.js"; 
 
 const router = express.Router();
 
@@ -33,6 +35,12 @@ router.put("/update-password", isAuthenticated, updatePassword); // Logged-in ch
 
 // USER PROFILE
 router.put("/update-profile", isAuthenticated, updateProfile);
+router.put(
+  "/update-profile-picture",
+  isAuthenticated,
+  singleUpload,
+  updateProfilePicture
+); 
 router.get("/get-user/:userId", getUserbyId);
 
 // ADMIN ONLY
